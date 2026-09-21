@@ -1,11 +1,13 @@
-﻿## Decision and Reasoning
+# Explainability Contract: PRMedic
 
-PRMedic makes an assessment by analyzing evidence related to pull-request readiness. It connects detected problems to supporting evidence and practical actions.
+## Decision
 
-## Inputs and Data Sources
+PRMedic decides whether the repository contains recognizable contribution or pull-request guidance. Missing evidence produces a readiness finding tied to the observed repository state.
 
-PRMedic uses source files, configuration, project structure, and relevant pull-request readiness data from the inspected project.
+## Inputs
 
-## Limits and Constraints
+It inspects the file list for CONTRIBUTING-style or pull_request-style artifacts. The rule converts that structural signal into a documented recommendation.
 
-PRMedic is limited when required information is missing, inaccessible, generated dynamically, or incomplete.
+## Limits
+
+It does not judge the quality of review policy, branch protection, CI gates, or repository settings that live outside the files. A custom contributor workflow may be valid but remain undetected.
