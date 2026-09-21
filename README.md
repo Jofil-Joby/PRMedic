@@ -1,48 +1,133 @@
 # PRMedic
 
-> Portable agent for diagnosing missing contribution and pull-request guidance.
+> A portable engineering agent for **pull-request readiness**.
 
-## What it does
+PRMedic inspects observable project evidence, detects **missing contribution or review guidance**, and produces an explainable improvement plan. Its purpose is not to replace specialist tooling. It provides a focused, auditable diagnostic layer that can travel across agent runtimes.
 
-PRMedic checks project evidence for contribution or pull-request guidance and reports when that workflow is difficult to discover. The goal is to make the contribution boundary explicit.
+## What makes it different
 
-### Diagnostic fingerprint
-
-**Contribution signals → review-readiness finding → evidence → action**
-
-## Why this agent is distinct
-
-PRMedic is concerned with how code changes enter a repository. It does not attempt to judge the quality of a pull request from filenames alone. Instead, it checks whether the repository exposes recognizable contribution guidance.
-
-## Workflow
+This project follows an **evidence → decision → explanation** model:
 
 ```text
-Repository
-    ↓
-Contribution scanner
-    ↓
-PR-readiness rule
-    ↓
-Observed evidence
-    ↓
-Improvement plan
+Project
+  ↓
+Scanner
+  ↓
+Domain Evidence
+  ↓
+Deterministic Diagnostic Rule
+  ↓
+Finding + Evidence + Confidence
+  ↓
+Improvement Plan
 ```
+
+The agent does not invent evidence. A finding is tied to what the scanner can actually observe.
+
+## Diagnostic contract
+
+| Layer | PRMedic behavior |
+| --- | --- |
+| Domain | pull-request readiness |
+| Primary signal | CONTRIBUTING / pull-request artifacts |
+| Remediation | Document contribution and review expectations |
+| Output | Structured, explainable findings |
+| Uncertainty | Explicitly constrained by available evidence |
+
+## Portable architecture
+
+```text
+                    ┌─────────────────────┐
+                    │   Portable Agent    │
+                    │ identity + behavior  │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              ↓                ↓                ↓
+          Diagnostic        Duties &         Explainability
+            Logic           Workflow           Contract
+              │
+              ↓
+        Runtime Adapters
+       ┌──────┬──────┬──────┬──────┐
+       ↓      ↓      ↓      ↓
+    OpenAI  CrewAI  Claude  Lyzr
+```
+
+The core diagnostic logic is kept separate from framework-specific adapters. This is the central design idea of the project, not four copies of the same agent wearing different hats.
+
+## Repository structure
+
+```text
+agent.yaml          # Portable identity and passport metadata
+SOUL.md             # Identity, principles, and behavior
+AGENTS.md           # Agent responsibilities
+DUTIES.md           # Maker / Checker workflow
+EXPLAINABILITY.md   # Decision, inputs, limits, and evidence contract
+core/               # Shared result model
+tools/              # Scanner and domain diagnostics
+skills/             # Declared capabilities
+workflows/          # Agent workflows
+adapters/           # Runtime-facing adapters
+tests/              # Deliberately diagnostic project fixtures
+```
+
+## Passport portability
+
+The agent is structured for the OpenGAP passport model and can be exported to:
+
+- OpenAI Agents SDK
+- CrewAI
+- Claude Code
+- Lyzr
+
+The important part is the **portable contract**: identity, behavior, duties, explainability, tools, and skills remain defined independently of a single runtime.
 
 ## Verification
 
 The repository includes:
-- OpenGAP passport metadata
-- contribution-focused fixture
-- explainability and duty contracts
-- four portability adapters
-- automated adapter checks
 
-OpenGAP validation passed and all four generated exports were exercised successfully.
+- Local adapter verification
+- A domain-specific broken-project fixture
+- OpenGAP-compatible passport metadata
+- Explainability requirements
+- Export verification across the supported targets
 
-## Design principle
+The engineering workflow is:
 
-**Make the contribution path visible.** A project that clearly documents how changes should be proposed is easier to maintain and easier to extend.
+```text
+Validate passport
+    → Verify adapters
+    → Run diagnostic fixture
+    → Export with OpenGAP
+    → Inspect generated artifacts
+```
 
-## Medic family
+## Scope and limitations
 
-PRMedic is one focused node in the Medic family of portable engineering agents. Shared architecture enables interoperability without collapsing every diagnostic into one generic reviewer.
+PRMedic is a focused diagnostic prototype. Its conclusions are limited to the evidence and rules implemented in this repository. It should complement, not replace, production-grade static analysis, security scanners, observability platforms, CI systems, or human review where appropriate.
+
+## Why this project exists
+
+This repository is one member of a deliberately modular **Medic agent family**. Each agent applies the same portable passport architecture to a different engineering failure surface.
+
+That makes the collection useful as an interoperability experiment:
+
+```text
+One passport architecture
+        +
+Different diagnostic domains
+        +
+Multiple agent runtimes
+        =
+Portable engineering-agent family
+```
+
+## Challenge context
+
+Built for the **HiDevs × Lyzr Agent Passport Challenge**, exploring portable agent identity, behavior contracts, explainability, verification, and framework interoperability.
+
+## Author
+
+**Jofil Joby**  
+[GitHub](https://github.com/Jofil-Joby)
